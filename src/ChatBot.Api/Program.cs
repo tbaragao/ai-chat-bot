@@ -18,7 +18,10 @@ builder.Services.AddSingleton<StringEmbeddingGenerator>(s => new OpenAI.Embeddin
 builder.Services.AddSingleton<IndexClient>(p => new PineconeClient(pineconeAiApiKey).Index("dt-ai-chatbot"));
 
 builder.Services.AddSingleton<WikipediaService>();
+
 builder.Services.AddSingleton<IndexBuilder>();
+
+builder.Services.AddSingleton<DocumentStore>();
 
 var app = builder.Build();
 
@@ -32,3 +35,4 @@ app.UseHttpsRedirection();
 var indexer = app.Services.GetRequiredService<IndexBuilder>();
 
 await indexer.BuildDocumentIndex(SourceData.LandmarkNames);
+Console.WriteLine("Done");

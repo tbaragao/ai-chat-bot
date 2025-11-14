@@ -4,7 +4,7 @@ using Pinecone;
 
 namespace ChatBot.Api.Services;
 
-public class IndexBuilder(StringEmbeddingGenerator embeddingGenerator, IndexClient pineconeClient, WikipediaService wikipediaService)
+public class IndexBuilder(StringEmbeddingGenerator embeddingGenerator, IndexClient pineconeClient, WikipediaService wikipediaService, DocumentStore documentStore)
 {
     public async Task BuildDocumentIndex(string[] pageTitles)
     {
@@ -33,6 +33,8 @@ public class IndexBuilder(StringEmbeddingGenerator embeddingGenerator, IndexClie
             {
                 Vectors = [pineconeVector]
             });
+            
+            documentStore.SaveDocument(wikiPage);
         }
     }
 }
