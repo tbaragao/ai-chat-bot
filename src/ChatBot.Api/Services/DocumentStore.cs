@@ -38,10 +38,10 @@ public sealed class DocumentStore
             cmd.Parameters.AddWithValue(p, idsList[i]);
         }
 
-        var orderByCase = "CASE Id " + string.Join(" ", idsList.Select((id, i) => $"WHEN $p{i} THEN {i}")) + " END";
+        var orderByCase = "CASE Id " + string.Join(" ", idsList.Select((id, i) => $"WHEN $p{i} THEN {i}")) + " END;";
 
         cmd.CommandText =
-            $@" SELECT, ID, TItle, Content, PageUrl From Documents Where Id IN ({string.Join(", ", paramNames)}) Order By {orderByCase}";
+            $@" SELECT Id, Title, Content, PageUrl From Documents Where Id IN ({string.Join(", ", paramNames)}) Order By {orderByCase}";
         var results = new List<Documents>();
         using var reader = cmd.ExecuteReader();
         while (reader.Read())

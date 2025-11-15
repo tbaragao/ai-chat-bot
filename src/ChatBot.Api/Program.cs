@@ -23,7 +23,23 @@ builder.Services.AddSingleton<IndexBuilder>();
 
 builder.Services.AddSingleton<DocumentStore>();
 
+builder.Services.AddSingleton<VectorSearchServices>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendCors", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
 var app = builder.Build();
+
+app.UseCors("FrontendCors");
 
 if (app.Environment.IsDevelopment())
 {
@@ -32,7 +48,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var indexer = app.Services.GetRequiredService<IndexBuilder>();
+// var indexer = app.Services.GetRequiredService<IndexBuilder>();
+//
+// await indexer.BuildDocumentIndex(SourceData.LandmarkNames);
 
-await indexer.BuildDocumentIndex(SourceData.LandmarkNames);
-Console.WriteLine("Done");
+app.MapGet("/search", async (string query, VectorSearchServices searchService) =>
+{
+    var results = await searchService.Search(query, 3);
+    return Results.Ok(results);
+});
+
+app.Run();
